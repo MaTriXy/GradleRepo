@@ -1,41 +1,32 @@
 package com.example.android.clickcounter;
 
-import android.test.ActivityInstrumentationTestCase2;
-import android.test.TouchUtils;
-import android.test.suitebuilder.annotation.MediumTest;
-import android.widget.Button;
-import android.widget.TextView;
+import android.support.test.filters.LargeTest;
+import android.support.test.rule.ActivityTestRule;
+import android.support.test.runner.AndroidJUnit4;
 
-public class ButtonClickTest extends ActivityInstrumentationTestCase2<ClickActivity> {
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-    private ClickActivity mClickActvity;
-    private Button mButton;
-    private TextView mTextView;
-    public ButtonClickTest() {
-        super(ClickActivity.class);
-    }
+import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
 
-        setActivityInitialTouchMode(true);
-        mClickActvity = getActivity();
-        mButton = (Button) mClickActvity.findViewById(R.id.click_button);
-        mTextView = (TextView) mClickActvity.findViewById(R.id.click_count_text_view);
-    }
+@RunWith(AndroidJUnit4.class)
+@LargeTest
+public class ButtonClickTest {
 
-    @MediumTest
-    public void testInitialValue() {
-        int initialNumber = Integer.parseInt(mTextView.getText().toString());
-        assertEquals(0, initialNumber);
-    }
+    @Rule
+    public ActivityTestRule<ClickActivity> mActivityRule = new ActivityTestRule<>(
+            ClickActivity.class);
 
-    @MediumTest
+    @Test
     public void testClick() {
-        int priorNumber = Integer.parseInt(mTextView.getText().toString());
-        TouchUtils.clickView(this, mButton);
-        int newNumber = Integer.parseInt(mTextView.getText().toString());
-        assertEquals(priorNumber + 1, newNumber);
+        onView(withId(R.id.click_count_text_view)).check(matches(withText("0")));
+        onView(withId(R.id.click_button)).perform(click());
+        onView(withId(R.id.click_count_text_view)).check(matches(withText("1")));
     }
 }
